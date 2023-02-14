@@ -12,19 +12,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<joka?>? data;
   late SharedPreferences sharedPreferences;
+
+  joka? k;
 
   getshar() async {
     sharedPreferences = await SharedPreferences.getInstance();
+  }
+
+  getapi() async {
+    k = await api_helper.helper.getapi();
+    setState(() {});
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    data = api_helper.helper.getapi();
     getshar();
+    getapi();
   }
 
   @override
@@ -36,8 +42,13 @@ class _HomePageState extends State<HomePage> {
         actions: [
           InkWell(
             onTap: () async {
-              
-              // await sharedPreferences.setStringList("Myjoks", [k!]);
+              api_helper.helper.jokes_data.add(k!.values);
+
+              List<String> m = api_helper.helper.jokes_data;
+              print(m);
+              await sharedPreferences.setStringList(
+                "Myjoks",m);
+              print(sharedPreferences.getStringList("Myjoks"));
             },
             child: Icon(Icons.save_alt),
           ),
@@ -62,33 +73,19 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            FutureBuilder(
-              future: data,
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                } else if (snapshot.hasData) {
-                  return Center(
-                    child: Container(
-                      child: Text("${snapshot.data!.values}"),
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+            Container(
+              child: (k?.values != null)
+                  ? Center(child: Text("${k?.values}"))
+                  : Center(child: CircularProgressIndicator()),
             ),
             SizedBox(
               height: 50,
             ),
             Container(
               child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    data = api_helper.helper.getapi();
-                  });
+                onPressed: () async {
+                  k = await api_helper.helper.getapi() as joka?;
+                  setState(() {});
                 },
                 child: Text("Fetch My Laugh"),
               ),
