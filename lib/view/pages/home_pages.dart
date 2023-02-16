@@ -18,6 +18,9 @@ class _HomePageState extends State<HomePage> {
 
   getshar() async {
     sharedPreferences = await SharedPreferences.getInstance();
+
+    api_helper.helper.jokes_data =
+        sharedPreferences.getStringList("Myjoks") ?? [];
   }
 
   getapi() async {
@@ -46,8 +49,7 @@ class _HomePageState extends State<HomePage> {
 
               List<String> m = api_helper.helper.jokes_data;
               print(m);
-              await sharedPreferences.setStringList(
-                "Myjoks",m);
+              await sharedPreferences.setStringList("Myjoks", m);
               print(sharedPreferences.getStringList("Myjoks"));
             },
             child: Icon(Icons.save_alt),
